@@ -210,6 +210,10 @@ class HAC {
 		return getElementById($idName, $this->dom);
 	}
 
+	function dummy() {
+		return null;
+	}
+
 
 }
 
