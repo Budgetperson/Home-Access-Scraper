@@ -1,6 +1,5 @@
 <?php
 require_once("RollingCurl.php");
-require_once("time.php");
 /* 
 	* 0th td = course name (PRE-IB SCI II)
 	* 1st td = period/block (01)
@@ -138,36 +137,10 @@ class HAC {
 		return "https://gradebook.roundrockisd.org/pc/displaygrades.aspx?data=" . $data . "&StudentId=" . $this->hacID;
 	}
 	
-	private function computeGPASemester($semester1 /*boolean*/, $exclude, $regularclasses) {
-		$firstSemesterAvgs = array();
-		for($i = 1; $i < $this->averages->length; $i++) {
-			if(in_array($i, $exclude)) { continue; }
-			$itemno = 0;
-			if($semester1 == true) { $itemno = 6; } else { $itemno = 11; }
-			$semesterAvg = $this->averages->item($i)->getElementsByTagName('td')->item($itemno)->textContent;
-			$semesterAvg = removeSpecialChars($semesterAvg);
-			if(strlen($semesterAvg) == 0) { continue; } //check if semester avg is blank or not
-		
-			if(in_array($i, $regularclasses)) { $semesterAvg -= 10; } // convert regular class grades to identical grades in PreAP
-			$firstSemesterAvgs[] = $semesterAvg;
-		}
-		$avg = 0;
-		foreach($firstSemesterAvgs as $grade) { $avg += $grade; }
-		$avg = $avg/(sizeof($firstSemesterAvgs));
-		$gpa = ($avg/10) - 4;
-		return $gpa;
-	}
 	
 	function getSemesterAverage($semesterNo) {
-		$itemNo = ($semesterNo == 1) ? 6 : 11; // TODO FIXME did I do it right?
+		$itemNo = ($semesterNo == 1) ? 6 : 11;
 		return $this->averages->item($i)->getElementsByTagName('td')->item($itemno)->textContent;
-	}
-	
-	function computeGPA($exclude, $regularclasses) {
-		$first = $this->computeGPASemester(true, $exclude, $regularclasses);
-		$second = $this->computeGPASemester(false, $exclude, $regularclasses);
-		return ($first + $second)/2;
-		// why do I have to be reminded when I test it >:(
 	}
 	
 	function getCourseNameFromPosition($position) {
@@ -208,10 +181,6 @@ class HAC {
 	/* also returns an array */
 	function getElementById($idName) {
 		return getElementById($idName, $this->dom);
-	}
-
-	function dummy() {
-		return null;
 	}
 
 
